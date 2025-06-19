@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        h1,h2,h3 {
+            text-align: center;
+            color: #ffffff;
+        }
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .stats-table th, .stats-table td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #444;
+        }
+        .stats-table th {
+            background-color: #1e1e1e;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .stats-table td {
+            background-color: #2d2d2d;
+        }
+        .loading {
+            text-align: center;
+            font-style: italic;
+            color: #aaa;
+        }
+        .error {
+            color: #ff6b6b;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Reverb Nation Ranking</h1>
+    <h3>Plattsburgh, NY</h3>
+    <div id="loading" class="loading">Loading data...</div>
+    <div id="error" class="error" style="display: none;"></div>
+    <table id="stats-table" class="stats-table" style="display: none;">
+        <thead>
+            <tr>
+                <th>Local</th>
+                <th>Regional</th>
+                <th>National</th>
+                <th>Global</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td id="local">-</td>
+                <td id="regional">-</td>
+                <td id="national">-</td>
+                <td id="global">-</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loadingElement = document.getElementById('loading');
+            const errorElement = document.getElementById('error');
+            const statsTable = document.getElementById('stats-table');
+            
+            loadingElement.style.display = 'block';
+            errorElement.style.display = 'none';
+            statsTable.style.display = 'none';
+            
+            const apiUrl = 'https://api.allorigins.win/raw?url=https://www.reverbnation.com/api/artist/8356171/stats';
+            
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('local').textContent = data.ranks.local.value;
+                    document.getElementById('regional').textContent = data.ranks.regional.value;
+                    document.getElementById('national').textContent = data.ranks.national.value;
+                    document.getElementById('global').textContent = data.ranks.global.value;
+                    
+                    loadingElement.style.display = 'none';
+                    statsTable.style.display = 'table';
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    loadingElement.style.display = 'none';
+                    errorElement.textContent = 'Failed to load data.';
+                    errorElement.style.display = 'block';
+                });
+        });
+    </script>
+</body>
+</html>
